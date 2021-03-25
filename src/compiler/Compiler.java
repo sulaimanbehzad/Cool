@@ -21,7 +21,7 @@ public class Compiler {
         parser.setBuildParseTree(true);
         ParseTree tree = parser.program();
         ParseTreeWalker walker = new ParseTreeWalker();
-        CoolListener listener = new CoolBaseListener();
+        CoolListener listener = new ProgramPrinter();
         walker.walk(listener, tree);
 
 
