@@ -16,17 +16,17 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void exitProgram(CoolParser.ProgramContext ctx) {
-
+        System.out.println("}");
     }
 
     @Override
     public void enterClasses(CoolParser.ClassesContext ctx) {
-
+//        System.out.println("{");
     }
 
     @Override
     public void exitClasses(CoolParser.ClassesContext ctx) {
-
+//        System.out.println("}");
     }
 
     @Override
@@ -41,33 +41,47 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterClassDefine(CoolParser.ClassDefineContext ctx) {
-        System.out.println("class " + ctx.TYPEID().get(0)+ "/");
+//        System.out.println("class " + ctx.TYPEID().get(0)+ "/");
         try {
-            System.out.println("class parent: " + ctx.TYPEID().get(1) + ", {");
+            System.out.println("class " + ctx.TYPEID().get(0)+ "/ " + "class parent: " + ctx.TYPEID().get(1) + ", {");
         }
         catch (Exception e) {
+//            could print object as parent for class A
 //            System.out.println(e.toString());
         }
     }
 
     @Override
     public void exitClassDefine(CoolParser.ClassDefineContext ctx) {
-
+        System.out.println("}");
     }
 
     @Override
     public void enterMethod(CoolParser.MethodContext ctx) {
+        try{
+            System.out.println("class method: " + ctx.OBJECTID() + "/ return type=" + ctx.TYPEID() + " {\n" +
+                    "parameters list = [" + ctx.getChild(4));
+            }
+        catch (Exception e) {
 
+        }
     }
+
+
 
     @Override
     public void exitMethod(CoolParser.MethodContext ctx) {
-
+        System.out.println("}");
     }
 
     @Override
     public void enterProperty(CoolParser.PropertyContext ctx) {
-
+        try {
+            System.out.println("field: " + ctx.OBJECTID() + "/ type= " + ctx.TYPEID());
+        }
+        catch (Exception e)
+        {
+        }
     }
 
     @Override
@@ -227,7 +241,7 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterOwnMethodCall(CoolParser.OwnMethodCallContext ctx) {
-
+        System.out.println(ctx.getText());
     }
 
     @Override
@@ -267,7 +281,13 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterAssignment(CoolParser.AssignmentContext ctx) {
+        try{
+//            String type =
+            System.out.println("field: " + ctx.OBJECTID()+ "/ type= " + ctx.OBJECTID());
+        }
+        catch (Exception e){
 
+        }
     }
 
     @Override
