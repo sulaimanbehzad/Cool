@@ -8,6 +8,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ProgramPrinter implements CoolListener {
 
+    int first_visit = 0;
+
     @Override
     public void enterProgram(CoolParser.ProgramContext ctx) {
         System.out.println("program start{\n");
@@ -43,7 +45,7 @@ public class ProgramPrinter implements CoolListener {
     public void enterClassDefine(CoolParser.ClassDefineContext ctx) {
 //        System.out.println("class " + ctx.TYPEID().get(0)+ "/");
         try {
-            System.out.println("class " + ctx.TYPEID().get(0)+ "/ " + "class parent: " + ctx.TYPEID().get(1) + ", {");
+            System.out.println("class " + ctx.TYPEID().get(0)+ "/ " + "class parents: " + ctx.TYPEID().get(1) + ", {");
         }
         catch (Exception e) {
 //            could print object as parent for class A
@@ -59,8 +61,9 @@ public class ProgramPrinter implements CoolListener {
     @Override
     public void enterMethod(CoolParser.MethodContext ctx) {
         try{
-            System.out.println("class method: " + ctx.OBJECTID() + "/ return type=" + ctx.TYPEID() + " {\n" +
-                    "parameters list = [" + ctx.getChild(4));
+            first_visit=0;
+            System.out.print("class method: " + ctx.OBJECTID() + "/ return type=" + ctx.TYPEID() + " {\n" +
+                    "parameters list = [");
             }
         catch (Exception e) {
 
@@ -91,7 +94,7 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterFormal(CoolParser.FormalContext ctx) {
-
+        System.out.print(ctx.getText() + ", ");
     }
 
     @Override
@@ -101,7 +104,7 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterLetIn(CoolParser.LetInContext ctx) {
-
+//        System.out.println("let in" + ctx.getText());
     }
 
     @Override
@@ -141,12 +144,12 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterWhile(CoolParser.WhileContext ctx) {
-
+        System.out.println("nested statement {");
     }
 
     @Override
     public void exitWhile(CoolParser.WhileContext ctx) {
-
+        System.out.println("}");
     }
 
     @Override
@@ -281,8 +284,13 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterAssignment(CoolParser.AssignmentContext ctx) {
+        //probably wrong to use assignment
         try{
 //            String type =
+            if(first_visit==0) {
+                System.out.println(" ]");
+                first_visit++;
+            }
             System.out.println("field: " + ctx.OBJECTID()+ "/ type= " + ctx.OBJECTID());
         }
         catch (Exception e){
