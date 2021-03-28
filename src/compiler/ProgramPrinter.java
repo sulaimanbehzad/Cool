@@ -62,8 +62,8 @@ public class ProgramPrinter implements CoolListener {
     public void enterMethod(CoolParser.MethodContext ctx) {
         try{
             first_visit=0;
-            System.out.print("class method: " + ctx.OBJECTID() + "/ return type=" + ctx.TYPEID() + " {\n" +
-                    "parameters list = [");
+            System.out.print("\tclass method: " + ctx.OBJECTID() + "/ return type=" + ctx.TYPEID() + " {\n" +
+                    "\t\tparameters list = [");
             }
         catch (Exception e) {
 
@@ -74,13 +74,14 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void exitMethod(CoolParser.MethodContext ctx) {
-        System.out.println("}");
+        System.out.println("\t\t" + ctx.expression().getText());
+        System.out.println("\t}");
     }
 
     @Override
     public void enterProperty(CoolParser.PropertyContext ctx) {
         try {
-            System.out.println("field: " + ctx.OBJECTID() + "/ type= " + ctx.TYPEID());
+            System.out.println("\tfield: " + ctx.OBJECTID() + "/ type= " + ctx.TYPEID());
         }
         catch (Exception e)
         {
@@ -204,7 +205,7 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterId(CoolParser.IdContext ctx) {
-
+//        System.out.println("ID: " + ctx.children);
     }
 
     @Override
@@ -224,7 +225,7 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterIf(CoolParser.IfContext ctx) {
-
+        System.out.println("\t nested Statement");
     }
 
     @Override
@@ -288,10 +289,10 @@ public class ProgramPrinter implements CoolListener {
         try{
 //            String type =
             if(first_visit==0) {
-                System.out.println(" ]");
+                System.out.println("]");
                 first_visit++;
             }
-            System.out.println("field: " + ctx.OBJECTID()+ "/ type= " + ctx.OBJECTID());
+//            System.out.println("field: " + ctx.OBJECTID()+ "/ type= " + ctx.OBJECTID());
         }
         catch (Exception e){
 
