@@ -9,11 +9,20 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 public class ProgramPrinter implements CoolListener {
 
     int first_visit = 0;
+    String indentor = "";
 
+    private String checkIndentation(String ind) {
+        if(ind.length()>=1) {
+            ind = ind.substring(0, ind.length() - 1);
+        }
+        else {
+        }
+        return ind;
+    }
     @Override
     public void enterProgram(CoolParser.ProgramContext ctx) {
-        System.out.println("program start{\n");
-//        System.out.println(ctx.getText());
+        System.out.println("program start{");
+        indentor += "\t";
     }
 
     @Override
@@ -23,12 +32,10 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterClasses(CoolParser.ClassesContext ctx) {
-//        System.out.println("{");
     }
 
     @Override
     public void exitClasses(CoolParser.ClassesContext ctx) {
-//        System.out.println("}");
     }
 
     @Override
@@ -45,25 +52,28 @@ public class ProgramPrinter implements CoolListener {
     public void enterClassDefine(CoolParser.ClassDefineContext ctx) {
 //        System.out.println("class " + ctx.TYPEID().get(0)+ "/");
         try {
-            System.out.println("class " + ctx.TYPEID().get(0)+ "/ " + "class parents: " + ctx.TYPEID().get(1) + ", {");
+            System.out.println(indentor + "class " + ctx.TYPEID().get(0)+ "/ " + "class parents: " + ctx.TYPEID().get(1) + ", {");
         }
         catch (Exception e) {
 //            could print object as parent for class A
-//            System.out.println(e.toString());
+            System.out.println(indentor + "class " + ctx.TYPEID().get(0)+ "/ " + "class parents: Object" + ", {");
         }
+        indentor+="\t";
     }
 
     @Override
     public void exitClassDefine(CoolParser.ClassDefineContext ctx) {
-        System.out.println("}");
+        indentor = checkIndentation(indentor);
+        System.out.println(indentor + "}");
     }
 
     @Override
     public void enterMethod(CoolParser.MethodContext ctx) {
         try{
             first_visit=0;
-            System.out.print("\tclass method: " + ctx.OBJECTID() + "/ return type=" + ctx.TYPEID() + " {\n" +
-                    "\t\tparameters list = [");
+            System.out.print(indentor + "class method: " + ctx.OBJECTID() + "/ return type=" + ctx.TYPEID() + " {\n");
+            indentor+="\t";
+            System.out.print(indentor + "parameters list = [");
             }
         catch (Exception e) {
 
@@ -74,14 +84,15 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void exitMethod(CoolParser.MethodContext ctx) {
-        System.out.println("\t\t" + ctx.expression().getText());
-        System.out.println("\t}");
+        System.out.println(indentor + ctx.expression().getText());
+        indentor = checkIndentation(indentor);
+        System.out.println(indentor + "}");
     }
 
     @Override
     public void enterProperty(CoolParser.PropertyContext ctx) {
         try {
-            System.out.println("\tfield: " + ctx.OBJECTID() + "/ type= " + ctx.TYPEID());
+            System.out.println(indentor + "field: " + ctx.OBJECTID() + "/ type= " + ctx.TYPEID());
         }
         catch (Exception e)
         {
@@ -149,13 +160,18 @@ public class ProgramPrinter implements CoolListener {
 //        System.out.println(s);
 //        TODO: check if it has another WHILE inside
         if (!s.contains("if")) {
-            System.out.println("nested statement {");
+            System.out.println(indentor + "nested statement {");
+            indentor += "\t";
         }
     }
 
     @Override
     public void exitWhile(CoolParser.WhileContext ctx) {
-        System.out.println("}");
+        String s = ctx.getText();
+        if (!s.contains("if")) {
+            indentor = checkIndentation(indentor);
+            System.out.println("}");
+        }
     }
 
     @Override
@@ -234,14 +250,18 @@ public class ProgramPrinter implements CoolListener {
 //        System.out.println(s);
 //        TODO: Check if it has another if inside
         if (!s.contains("while")) {
-            System.out.println("nested statement {");
+            System.out.println(indentor + "nested statement {");
+            indentor += "\t";
         }
     }
 
     @Override
     public void exitIf(CoolParser.IfContext ctx) {
-        System.out.println("}");
-
+        String s = ctx.getText();
+        if (!s.contains("while")) {
+            indentor = checkIndentation(indentor);
+            System.out.println(indentor + "}");
+        }
     }
 
     @Override
