@@ -145,7 +145,12 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterWhile(CoolParser.WhileContext ctx) {
-        System.out.println("nested statement {");
+        String s = ctx.getText();
+//        System.out.println(s);
+//        TODO: check if it has another WHILE inside
+        if (!s.contains("if")) {
+            System.out.println("nested statement {");
+        }
     }
 
     @Override
@@ -225,11 +230,17 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterIf(CoolParser.IfContext ctx) {
-        System.out.println("\t nested Statement");
+        String s = ctx.getText();
+//        System.out.println(s);
+//        TODO: Check if it has another if inside
+        if (!s.contains("while")) {
+            System.out.println("nested statement {");
+        }
     }
 
     @Override
     public void exitIf(CoolParser.IfContext ctx) {
+        System.out.println("}");
 
     }
 
