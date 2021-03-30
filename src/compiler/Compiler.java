@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.io.IOException;
 public class Compiler {
     public static void main(String[] args) throws IOException {
-        CharStream stream = (CharStream) CharStreams.fromFileName("./sample/test.mla");
+        CharStream stream = (CharStream) CharStreams.fromFileName("./sample/test1.cl");
         CoolLexer lexer = new CoolLexer(stream);
         TokenStream tokens = new CommonTokenStream(lexer);
         CoolParser parser = new CoolParser(tokens);

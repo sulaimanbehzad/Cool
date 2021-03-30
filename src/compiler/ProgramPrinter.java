@@ -12,13 +12,13 @@ public class ProgramPrinter implements CoolListener {
     String indentor = "";
 
     private String checkIndentation(String ind) {
-        if(ind.length()>=1) {
+        if (ind.length() >= 1) {
             ind = ind.substring(0, ind.length() - 1);
-        }
-        else {
+        } else {
         }
         return ind;
     }
+
     @Override
     public void enterProgram(CoolParser.ProgramContext ctx) {
         System.out.println("program start{");
@@ -52,13 +52,12 @@ public class ProgramPrinter implements CoolListener {
     public void enterClassDefine(CoolParser.ClassDefineContext ctx) {
 //        System.out.println("class " + ctx.TYPEID().get(0)+ "/");
         try {
-            System.out.println(indentor + "class " + ctx.TYPEID().get(0)+ "/ " + "class parents: " + ctx.TYPEID().get(1) + ", {");
-        }
-        catch (Exception e) {
+            System.out.println(indentor + "class " + ctx.TYPEID().get(0) + "/ " + "class parents: " + ctx.TYPEID().get(1) + ", {");
+        } catch (Exception e) {
 //            could print object as parent for class A
-            System.out.println(indentor + "class " + ctx.TYPEID().get(0)+ "/ " + "class parents: Object" + ", {");
+            System.out.println(indentor + "class " + ctx.TYPEID().get(0) + "/ " + "class parents: Object" + ", {");
         }
-        indentor+="\t";
+        indentor += "\t";
     }
 
     @Override
@@ -69,22 +68,19 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterMethod(CoolParser.MethodContext ctx) {
-        try{
-            first_visit=0;
+        try {
+            first_visit = 0;
             System.out.print(indentor + "class method: " + ctx.OBJECTID() + "/ return type=" + ctx.TYPEID() + " {\n");
-            indentor+="\t";
+            indentor += "\t";
             System.out.print(indentor + "parameters list = [");
-            }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
     }
 
 
-
     @Override
     public void exitMethod(CoolParser.MethodContext ctx) {
-        System.out.println(indentor + ctx.expression().getText());
         indentor = checkIndentation(indentor);
         System.out.println(indentor + "}");
     }
@@ -93,9 +89,7 @@ public class ProgramPrinter implements CoolListener {
     public void enterProperty(CoolParser.PropertyContext ctx) {
         try {
             System.out.println(indentor + "field: " + ctx.OBJECTID() + "/ type= " + ctx.TYPEID());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
         }
     }
 
@@ -116,12 +110,15 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void enterLetIn(CoolParser.LetInContext ctx) {
-//        System.out.println("let in" + ctx.getText());
+
     }
 
     @Override
     public void exitLetIn(CoolParser.LetInContext ctx) {
-
+        try {
+            System.out.println(indentor + "field: " + ctx.OBJECTID() + "/ type= " + ctx.TYPEID());
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -317,22 +314,24 @@ public class ProgramPrinter implements CoolListener {
     @Override
     public void enterAssignment(CoolParser.AssignmentContext ctx) {
         //probably wrong to use assignment
-        try{
+        try {
 //            String type =
-            if(first_visit==0) {
+            if (first_visit == 0) {
                 System.out.println("]");
                 first_visit++;
             }
 //            System.out.println("field: " + ctx.OBJECTID()+ "/ type= " + ctx.OBJECTID());
-        }
-        catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
     @Override
     public void exitAssignment(CoolParser.AssignmentContext ctx) {
-
+        try {
+            System.out.println(indentor + "field: " + ctx.OBJECTID());
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -397,7 +396,6 @@ public class ProgramPrinter implements CoolListener {
 
     @Override
     public void visitTerminal(TerminalNode terminalNode) {
-
     }
 
     @Override
