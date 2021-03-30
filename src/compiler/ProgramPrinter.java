@@ -116,7 +116,7 @@ public class ProgramPrinter implements CoolListener {
     @Override
     public void exitLetIn(CoolParser.LetInContext ctx) {
         try {
-            System.out.println(indentor + "field: " + ctx.OBJECTID() + "/ type= " + ctx.TYPEID());
+            System.out.println(indentor + "field: " + ctx.OBJECTID().get(0) + "/ type= " + ctx.TYPEID().get(0));
         } catch (Exception e) {
         }
     }
@@ -329,7 +329,7 @@ public class ProgramPrinter implements CoolListener {
     @Override
     public void exitAssignment(CoolParser.AssignmentContext ctx) {
         try {
-            System.out.println(indentor + "field: " + ctx.OBJECTID());
+//            System.out.println(indentor + "field: " + ctx.OBJECTID());
         } catch (Exception e) {
         }
     }
