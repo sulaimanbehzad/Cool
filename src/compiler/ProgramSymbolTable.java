@@ -12,6 +12,7 @@ public class ProgramSymbolTable implements CoolListener {
 
     Scope currentScope;
     public static ArrayList<SymbolTable> symbolTables = new ArrayList<SymbolTable>();
+//    TODO there is no method for ELSE block!
 
     @Override
     public void enterProgram(CoolParser.ProgramContext ctx) {
@@ -120,12 +121,12 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void enterLetIn(CoolParser.LetInContext ctx) {
-
+//        TODO must be compelete
     }
 
     @Override
     public void exitLetIn(CoolParser.LetInContext ctx) {
-
+//        TODO must be compelete
     }
 
     @Override
@@ -160,12 +161,18 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void enterWhile(CoolParser.WhileContext ctx) {
+        Scope newScope = new Scope(ctx.WHILE().getText(), ctx.start.getLine());
+        newScope.parentScope = currentScope;
+        currentScope = newScope;
 
     }
 
     @Override
     public void exitWhile(CoolParser.WhileContext ctx) {
-
+        symbolTables.add(currentScope.SymbolTable);
+        Scope newScope;
+        newScope = currentScope.parentScope;
+        currentScope = newScope;
     }
 
     @Override
@@ -210,12 +217,17 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void enterBlock(CoolParser.BlockContext ctx) {
-
+//        Scope newScope = new Scope("block", ctx.start.getLine());
+//        newScope.parentScope = currentScope;
+//        currentScope = newScope;
     }
 
     @Override
     public void exitBlock(CoolParser.BlockContext ctx) {
-
+//        symbolTables.add(currentScope.SymbolTable);
+//        Scope newScope;
+//        newScope = currentScope.parentScope;
+//        currentScope = newScope;
     }
 
     @Override
@@ -240,22 +252,32 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void enterIf(CoolParser.IfContext ctx) {
-
+        Scope newScope = new Scope(ctx.IF().getText(), ctx.start.getLine());
+        newScope.parentScope = currentScope;
+        currentScope = newScope;
     }
 
     @Override
     public void exitIf(CoolParser.IfContext ctx) {
-
+        symbolTables.add(currentScope.SymbolTable);
+        Scope newScope;
+        newScope = currentScope.parentScope;
+        currentScope = newScope;
     }
 
     @Override
     public void enterCase(CoolParser.CaseContext ctx) {
-
+        Scope newScope = new Scope(ctx.CASE().getText(), ctx.start.getLine());
+        newScope.parentScope = currentScope;
+        currentScope = newScope;
     }
 
     @Override
     public void exitCase(CoolParser.CaseContext ctx) {
-
+        symbolTables.add(currentScope.SymbolTable);
+        Scope newScope;
+        newScope = currentScope.parentScope;
+        currentScope = newScope;
     }
 
     @Override
