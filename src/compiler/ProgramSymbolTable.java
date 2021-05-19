@@ -7,10 +7,10 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ProgramSymbolTable implements CoolListener {
-//  TODO CHECK DUPLICATES
-
+    //  TODO CHECK DUPLICATES
     Scope currentScope;
     public static ArrayList<SymbolTable> symbolTables = new ArrayList<SymbolTable>();
 //    TODO there is no method for ELSE block!
@@ -19,6 +19,7 @@ public class ProgramSymbolTable implements CoolListener {
     public void enterProgram(CoolParser.ProgramContext ctx) {
         currentScope = new Scope("program", ctx.start.getLine());
         currentScope.depth = 0;
+        currentScope.parentScope = null;
 
     }
 
@@ -26,6 +27,8 @@ public class ProgramSymbolTable implements CoolListener {
     public void exitProgram(CoolParser.ProgramContext ctx) {
 //    TODO need to do something here!
         symbolTables.add(currentScope.SymbolTable);
+        Collections.reverse(symbolTables);
+        System.out.println();
         System.out.println(symbolTables);
     }
 
@@ -57,12 +60,17 @@ public class ProgramSymbolTable implements CoolListener {
         } else {
             classDefine = new ClassDefine(ctx.TYPEID(0).toString());
         }
-        currentScope.SymbolTable.insert("class_" + classDefine.name, classDefine);
-        Scope newScope = new Scope(ctx.TYPEID(0).getText(), ctx.start.getLine());
-        newScope.parentScope = currentScope;
-        currentScope = newScope;
-//        System.out.println(classDefine);
-
+        if (isExist(currentScope, classDefine.name, "class")) {
+            currentScope.SymbolTable.insert("class_" + classDefine.name + "_" + ctx.start.getLine(), classDefine);
+            Scope newScope = new Scope(ctx.TYPEID(0).getText(), ctx.start.getLine());
+            newScope.parentScope = currentScope;
+            currentScope = newScope;
+        } else {
+            currentScope.SymbolTable.insert("class_" + classDefine.name, classDefine);
+            Scope newScope = new Scope(ctx.TYPEID(0).getText(), ctx.start.getLine());
+            newScope.parentScope = currentScope;
+            currentScope = newScope;
+        }
     }
 
     @Override
@@ -82,11 +90,21 @@ public class ProgramSymbolTable implements CoolListener {
                 method.parametersTypes.add(ctx.formal(i).TYPEID().toString());
             }
         }
-        method.returnType = ctx.TYPEID().getText();
-        currentScope.SymbolTable.insert("method_" + method.name, method);
-        Scope newScope = new Scope(ctx.OBJECTID().getText(), ctx.start.getLine());
-        newScope.parentScope = currentScope;
-        currentScope = newScope;
+        if (isExist(currentScope, method.name, "method")) {
+            method.returnType = ctx.TYPEID().getText();
+            currentScope.SymbolTable.insert("method_" + method.name + "_" + ctx.start.getLine(), method);
+            Scope newScope = new Scope(ctx.OBJECTID().getText(), ctx.start.getLine());
+            newScope.parentScope = currentScope;
+            currentScope = newScope;
+        } else {
+            method.returnType = ctx.TYPEID().getText();
+            currentScope.SymbolTable.insert("method_" + method.name, method);
+            Scope newScope = new Scope(ctx.OBJECTID().getText(), ctx.start.getLine());
+            newScope.parentScope = currentScope;
+            newScope.depth = currentScope.parentScope.depth + 1;
+            currentScope = newScope;
+        }
+
     }
 
     @Override
@@ -102,7 +120,12 @@ public class ProgramSymbolTable implements CoolListener {
         Property property = new Property();
         property.name = ctx.OBJECTID().getText();
         property.type = ctx.TYPEID().getText();
-        currentScope.SymbolTable.insert("property_" + property.name, property);
+        if (isExist(currentScope, property.name, "property")) {
+            currentScope.SymbolTable.insert("property_" + property.name + "_" + ctx.start.getLine(), property);
+        } else {
+            currentScope.SymbolTable.insert("property_" + property.name, property);
+        }
+
     }
 
     @Override
@@ -410,5 +433,38 @@ public class ProgramSymbolTable implements CoolListener {
     @Override
     public void exitEveryRule(ParserRuleContext parserRuleContext) {
 
+    }
+
+    public boolean isExist(Scope currentScope, String key, String type) {
+        if (currentScope == null) {
+            return false;
+        }
+        switch (type) {
+            case "class":
+                if (currentScope.lookUp("class_" + key)) {
+                    return true;
+                }
+                break;
+            case "method":
+                if (currentScope.lookUp("method_" + key)) {
+                    return true;
+                }
+                break;
+
+//            case "field":
+//            case "parameter":
+//                if (currentScope.lookUp(key + "_field") || currentScope.lookUp(key + "_parameter")){
+//                    return true;
+//                }
+//                break;
+            case "property":
+
+                if (currentScope.lookUp("property_" + key)) {
+                    return true;
+                }
+                break;
+
+        }
+        return isExist(currentScope.parentScope, key, type);
     }
 }

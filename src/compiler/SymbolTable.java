@@ -27,7 +27,7 @@ public class SymbolTable {
     public void insert(String idefname ,Object value){
         items.put(idefname,value);
     }
-    public boolean lookup (String idefName){
+    public boolean lookUp (String idefName){
         return items.containsKey(idefName);
     }
 
