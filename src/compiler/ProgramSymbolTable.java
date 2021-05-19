@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.ArrayList;
 
 public class ProgramSymbolTable implements CoolListener {
+//  TODO CHECK DUPLICATES
 
     Scope currentScope;
     public static ArrayList<SymbolTable> symbolTables = new ArrayList<SymbolTable>();
@@ -121,12 +122,27 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void enterLetIn(CoolParser.LetInContext ctx) {
-//        TODO must be compelete
+        Let let = new Let();
+        int len = ctx.OBJECTID().toArray().length;
+        if (len > 0) {
+            for (int i = 0; i < len; i++) {
+                let.parametersNames.add(ctx.OBJECTID(i).getText());
+            }
+            for (int i = 0; i < len; i++) {
+                let.parametersTypes.add(ctx.TYPEID(i).getText());
+            }
+        }
+
+        currentScope.SymbolTable.insert("let_" + ctx.start.getLine(), let);
+//        Scope newScope = new Scope(ctx.LET().getText(), ctx.start.getLine());
+//        newScope.parentScope = currentScope;
+//        currentScope = newScope;
+
     }
 
     @Override
     public void exitLetIn(CoolParser.LetInContext ctx) {
-//        TODO must be compelete
+        symbolTables.add(currentScope.SymbolTable);
     }
 
     @Override
@@ -217,17 +233,10 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void enterBlock(CoolParser.BlockContext ctx) {
-//        Scope newScope = new Scope("block", ctx.start.getLine());
-//        newScope.parentScope = currentScope;
-//        currentScope = newScope;
     }
 
     @Override
     public void exitBlock(CoolParser.BlockContext ctx) {
-//        symbolTables.add(currentScope.SymbolTable);
-//        Scope newScope;
-//        newScope = currentScope.parentScope;
-//        currentScope = newScope;
     }
 
     @Override
@@ -267,17 +276,10 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void enterCase(CoolParser.CaseContext ctx) {
-        Scope newScope = new Scope(ctx.CASE().getText(), ctx.start.getLine());
-        newScope.parentScope = currentScope;
-        currentScope = newScope;
     }
 
     @Override
     public void exitCase(CoolParser.CaseContext ctx) {
-        symbolTables.add(currentScope.SymbolTable);
-        Scope newScope;
-        newScope = currentScope.parentScope;
-        currentScope = newScope;
     }
 
     @Override
