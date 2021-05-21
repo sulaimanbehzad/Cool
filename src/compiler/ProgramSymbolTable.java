@@ -13,6 +13,7 @@ public class ProgramSymbolTable implements CoolListener {
     //  TODO CHECK DUPLICATES
     Scope currentScope;
     public static ArrayList<SymbolTable> symbolTables = new ArrayList<SymbolTable>();
+    public static ArrayList<Property> propertyDefined = new ArrayList<Property>();
 //    TODO there is no method for ELSE block!
 
     @Override
@@ -30,6 +31,13 @@ public class ProgramSymbolTable implements CoolListener {
         Collections.reverse(symbolTables);
         System.out.println();
         System.out.println(symbolTables);
+        for (Property p:propertyDefined
+             ) {
+            if(!currentScope.SymbolTable.lookUp("class_" + p.type)) {
+                System.out.println("105: in line [" + p.row + ":" + p.col + "], " + p.type + " is not defined");
+            }
+//            isDefined("property");
+        }
     }
 
     @Override
@@ -65,6 +73,9 @@ public class ProgramSymbolTable implements CoolListener {
             Scope newScope = new Scope(ctx.TYPEID(0).getText(), ctx.start.getLine());
             newScope.parentScope = currentScope;
             currentScope = newScope;
+            String errStr =  String.format("%s : in line[%d:%d], %s [%s] has been already defined",101, ctx.start.getLine(),
+                    ctx.getStart().getCharPositionInLine(), classDefine.parent, classDefine.name);
+            System.out.println(errStr);
         } else {
             currentScope.SymbolTable.insert("class_" + classDefine.name, classDefine);
             Scope newScope = new Scope(ctx.TYPEID(0).getText(), ctx.start.getLine());
@@ -75,6 +86,7 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void exitClassDefine(CoolParser.ClassDefineContext ctx) {
+//        System.out.println("class scope" + currentScope.SymbolTable);
         symbolTables.add(currentScope.SymbolTable);
         Scope newScope;
         newScope = currentScope.parentScope;
@@ -96,6 +108,9 @@ public class ProgramSymbolTable implements CoolListener {
             Scope newScope = new Scope(ctx.OBJECTID().getText(), ctx.start.getLine());
             newScope.parentScope = currentScope;
             currentScope = newScope;
+            String errStr =  String.format("%s : in line[%d:%d], %s [%s] has been already defined",102, ctx.start.getLine(),
+                    ctx.getStart().getCharPositionInLine(), method.returnType, method.name);
+            System.out.println(errStr);
         } else {
             method.returnType = ctx.TYPEID().getText();
             currentScope.SymbolTable.insert("method_" + method.name, method);
@@ -120,9 +135,18 @@ public class ProgramSymbolTable implements CoolListener {
         Property property = new Property();
         property.name = ctx.OBJECTID().getText();
         property.type = ctx.TYPEID().getText();
+        property.row = ctx.start.getLine();
+        property.col = ctx.getStart().getCharPositionInLine();
         if (isExist(currentScope, property.name, "property")) {
             currentScope.SymbolTable.insert("property_" + property.name + "_" + ctx.start.getLine(), property);
+            String errStr =  String.format("%s : in line[%d:%d], %s [%s] has been already defined",104, property.row,
+                    property.col, property.type, property.name);
+            System.out.println(errStr);
         } else {
+//            TODO check if it's defining now or else if it's already defined
+//            System.out.println(property);
+//            System.out.println(isExist(currentScope, property.type, "property"));
+            propertyDefined.add(property);
             currentScope.SymbolTable.insert("property_" + property.name, property);
         }
 
@@ -130,12 +154,13 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void exitProperty(CoolParser.PropertyContext ctx) {
+//        System.out.println(currentScope.SymbolTable);
 
     }
 
     @Override
     public void enterFormal(CoolParser.FormalContext ctx) {
-
+//        formal = parameters
     }
 
     @Override
@@ -304,9 +329,10 @@ public class ProgramSymbolTable implements CoolListener {
     @Override
     public void exitCase(CoolParser.CaseContext ctx) {
     }
-
+// DONE check undefined method
     @Override
     public void enterOwnMethodCall(CoolParser.OwnMethodCallContext ctx) {
+        isDefined(ctx.OBJECTID().getText(), ctx.start.getLine(), ctx.getStart().getCharPositionInLine());
 
     }
 
@@ -347,6 +373,20 @@ public class ProgramSymbolTable implements CoolListener {
 
     @Override
     public void enterAssignment(CoolParser.AssignmentContext ctx) {
+//        System.out.println(ctx.getText());
+//        String cur = ctx.OBJECTID().getText();
+//        try {
+//            if (!isDefined(cur)) {
+//                System.out.println("error 105 - not defined");
+//            } else {
+////            TODO check if it's defining now or else if it's already defined
+////            System.out.println(ctx.getText());
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            System.out.println(e);
+//        }
 
     }
 
@@ -463,8 +503,19 @@ public class ProgramSymbolTable implements CoolListener {
                     return true;
                 }
                 break;
-
         }
         return isExist(currentScope.parentScope, key, type);
     }
+    public boolean isDefined(String key, int row, int col) {
+        if(symbolTables.contains(key)) {
+            System.out.println(key + " defined");
+            return true;
+        }
+        else {
+            System.out.println("105: in line [" +row+":"+col+"], " + key + " is not defined");
+            return false;
+        }
+
+    }
+
 }

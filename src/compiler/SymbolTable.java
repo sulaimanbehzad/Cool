@@ -30,5 +30,15 @@ public class SymbolTable {
     public boolean lookUp (String idefName){
         return items.containsKey(idefName);
     }
+//    public Object lookUpLocal(String t){
+//        return items.get(scopeNumber).get(t);
+//    }
+//    public Object lookUpGlobal(String t){
+//        for ( int i = scopeNumber; i>=0 ; i--){
+//            if (items.get(i).containsKey(t))
+//                return items.get(i).get(t);
+//        }
+//        return null;
+//    }
 
 }
